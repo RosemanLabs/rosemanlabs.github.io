@@ -1,2 +1,2 @@
 # rosemanlabs.github.io
-test
+Roseman Labs' Technology Blog
