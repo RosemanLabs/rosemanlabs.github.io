@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>C++ build systems: our transition from CMake to Meson | Roseman Labs’ Tech Blog</title>
+<title>C++ build systems: our transition from CMake to Meson | Roseman Labs Tech Blog</title>
 <meta name="generator" content="Jekyll v4.4.1" />
 <meta property="og:title" content="C++ build systems: our transition from CMake to Meson" />
 <meta name="author" content="Niek J. Bouman" />
@@ -12,7 +12,7 @@
 <meta property="og:description" content="We develop our main product, Cranmera MPC engine, in C++20. (Why we chose Modern C++ and not, for example, Rust, is a topic for yet another blogpost.) Because C++ doesn’t come with a default build system like Rust’s Cargo, it means that it is up to the programmer to choose an appropriate build system. (Strictly speaking, I should say ‘build system generator’, as Ninja is the actual build system that we use, but let’s not get into this kind of nitpicking here.) This choice is of course not just a disadvantage; in that you actually have a choice. As CMake is quite popular in the C++ community these days, I had been using CMake for several years now. (And before that, in a more distant past, say around 2006, I used GNU’s Automake.) Anyway, in the beginning, I was satisfied with my choice for CMake, although I never had the feeling that I really mastered CMake." />
 <link rel="canonical" href="/c++/build-systems/2021/02/22/c++-build-systems-our-transition-from-cmake-to-meson.html" />
 <meta property="og:url" content="/c++/build-systems/2021/02/22/c++-build-systems-our-transition-from-cmake-to-meson.html" />
-<meta property="og:site_name" content="Roseman Labs’ Tech Blog" />
+<meta property="og:site_name" content="Roseman Labs Tech Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2021-02-22T08:00:00+01:00" />
 <meta name="twitter:card" content="summary" />
@@ -24,10 +24,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="shortcut icon" type="image/svg" href="/favicon.svg"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Roseman Labs&apos; Tech Blog" /></head>
+  <link rel="shortcut icon" type="image/svg" href="/favicon.svg"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Roseman Labs Tech Blog" /></head>
 <body><header class="site-header" role="banner">
 
-  <div class="wrapper"><a class="site-title" rel="author" href="/">Roseman Labs&#39; Tech Blog</a><nav class="site-nav">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Roseman Labs Tech Blog</a><nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
           <span class="menu-icon">
@@ -105,12 +105,12 @@ I do not want claim that our build system requirements are very complex, though 
 
   <div class="wrapper">
 
-    <h2 class="footer-heading">Roseman Labs&#39; Tech Blog</h2>
+    <h2 class="footer-heading">Roseman Labs Tech Blog</h2>
 
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">Roseman Labs&#39; Tech Blog</li><li><a class="u-email" href="mailto:info@rosemanlabs.com">info@rosemanlabs.com</a></li><li class="p-name">© Roseman Labs 2020–2025</li>
+          <li class="p-name">Roseman Labs Tech Blog</li><li><a class="u-email" href="mailto:info@rosemanlabs.com">info@rosemanlabs.com</a></li><li class="p-name">© Roseman Labs 2020–2025</li>
         </ul><ul class="social-media-list"></ul>
 </div>
 
