@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Supporting abstract algebra in MPC for threshold cryptography | Roseman Labs Tech Blog</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Supporting abstract algebra in MPC for threshold cryptography" />
+<meta name="author" content="Toon Segers" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Secure multi-party computation (MPC) allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much." />
+<meta property="og:description" content="Secure multi-party computation (MPC) allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much." />
+<link rel="canonical" href="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html" />
+<meta property="og:url" content="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html" />
+<meta property="og:site_name" content="Roseman Labs Tech Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-13T19:50:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Supporting abstract algebra in MPC for threshold cryptography" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Toon Segers"},"dateModified":"2025-11-13T19:50:00+01:00","datePublished":"2025-11-13T19:50:00+01:00","description":"Secure multi-party computation (MPC) allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much.","headline":"Supporting abstract algebra in MPC for threshold cryptography","mainEntityOfPage":{"@type":"WebPage","@id":"/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html"},"url":"/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="shortcut icon" type="image/svg" href="/favicon.svg"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Roseman Labs Tech Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Roseman Labs Tech Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Supporting abstract algebra in MPC for threshold cryptography</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-11-13T19:50:00+01:00" itemprop="datePublished">Nov 13, 2025
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Toon Segers</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><a href="https://en.wikipedia.org/wiki/Secure_multi-party_computation">Secure multi-party computation (MPC)</a> allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much.</p>
+
+<p>Abstract algebra and number theory are sub-fields of mathematics that provide many of the building blocks of cryptography. The <a href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm">extended greatest common divisor</a>, for example, can be used for modular inversion, an important step in RSA key generation. Our interest is in zero-knowledge proofs that allow an outsider to an MPC computation to verify that this computation was not tampered with.</p>
+
+<p>In our recent paper, <a href="https://link.springer.com/chapter/10.1007/978-3-031-34671-2_3"><em>“Efficient Extended GCD and Class Groups from Secure Integer Arithmetic”</em></a>, my PhD supervisor <a href="https://berry.win.tue.nl/">Berry Schoenmakers</a> and I present a technique to implement certain number-theoretic operations within MPC. With this paper we extend the toolbox for MPC and enable cryptographic operations such as <a href="https://en.wikipedia.org/wiki/Zero-knowledge_proof">zero-knowledge proofs (ZKPs)</a> in the MPC setting.</p>
+
+<h2 id="zero-knowledge-proofs-and-the-role-of-class-groups">Zero-knowledge proofs and the role of class groups</h2>
+
+<p>Zero-knowledge proofs allow one party (the prover) to convince another (the verifier) that a statement is true, without revealing any information beyond the validity of the statement. Many ZKP systems rely on finite <a href="https://en.wikipedia.org/wiki/Group_(mathematics)">groups</a> with specific properties, often elliptic curves or modular arithmetic groups.</p>
+
+<p>One reason for finite groups being ubiquitous in cryptography is because of the discrete logarithm problem; for certain groups, this problem is believed to be hard, yielding a candidate one-way function.</p>
+
+<p>Recall that the number of elements in a group is called the group <em>order</em>.
+Now, so-called <a href="https://en.wikipedia.org/wiki/Ideal_class_group"><em>class groups</em></a> have a special property that sets them apart: <strong>their group order is unknown</strong>. If the size is chosen sufficiently large, no one can determine the exact order of the group, not even someone who creates an instance of this group.</p>
+
+<p>This “unknown order” feature is extremely valuable because it allows building zero-knowledge proof systems that do not require a <em>trusted setup</em>, i.e., a system that requires its setup to be performed by an honest party. The unknown-order feature can also speed up zero-knowledge proof systems.</p>
+
+<p>Being able to construct a zero-knowledge proof <em>in MPC</em> enables public verifiability of an MPC computation — letting an outsider to the computation verify the correctness of the computation. In other words, protection against tampering with the computation, even if all compute parties are corrupted. Additionally, bringing class groups into the MPC world means we can now construct ZKPs with the advantages of unknown-order groups we mentioned above.</p>
+
+<h2 id="the-core-challenge-secure-arithmetic-for-xgcd-and-group-operations">The core challenge: secure arithmetic for XGCD and group operations</h2>
+
+<p>One of the foundations of our work is the <strong>extended greatest common divisor (xgcd)</strong> algorithm. The integer gcd algorithm computes, not surprisingly, the greatest common divisor of two integers. For example gcd(22, 33) = 11.</p>
+
+<p>The xgcd computes two additional factors, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional factors are called the Bézout coefficients.</p>
+
+<p>In a normal setting, the xgcd algorithm involves branching decisions based on comparisons. However branching on secret data is insecure, as it could leak information about the inputs via various side-channels. One of the core challenges of building an MPC-version is to redesign the xgcd algorithm so that all branching becomes <em>secret independent</em>, aka <em>constant time</em>.</p>
+
+<h3 id="a-constant-time-integer-based-xgcd">A constant-time, integer-based XGCD</h3>
+
+<p>In our result, we adapt the <a href="https://eprint.iacr.org/2019/266">Bernstein–Yang “divsteps” algorithm</a>, which already runs in constant time, and rework it to operate purely on integers (instead of 2-adic representations). This is more suitable for our MPC setting. The protocol runs a fixed number of iterations, each performing only arithmetic and bitwise operations that can be done securely in MPC. The overall cost is <em>O</em>(<em>N</em> log <em>N</em>) secure multiplications, which is significantly more efficient than using traditional binary GCD methods (whose asymptotic complexity is <em>O</em>(<em>N</em>²)).</p>
+
+<p>For the mathematicians, we also prove tight bounds on the size of the intermediate results (the Bézout coefficients):</p>
+
+<p>|<em>u</em>|, |<em>v</em>| ≤ 3  max(<em>a</em>, <em>b</em>)</p>
+
+<p>Explicit bounds on these intermediate results are essential to control the numeric range of secret shares and avoid overflows.</p>
+
+<h2 id="secure-groups-in-mpc">Secure groups in MPC</h2>
+
+<p>To go beyond integers, we <a href="https://mpyc.readthedocs.io/en/latest/mpyc.html#module-mpyc.secgroups">implement</a> the concept of a <strong>secure group</strong>. This describes how to represent and manipulate elements of a finite group under MPC.</p>
+
+<p>A secure group implementation must support:</p>
+
+<ul>
+  <li>Group operations (multiplication, inversion)</li>
+  <li>Equality tests and conditional branching</li>
+  <li>Exponentiation</li>
+  <li>Random sampling</li>
+  <li>Encoding and decoding between representations</li>
+</ul>
+
+<p>By defining these primitives generically, any group, for example based on elliptic curves, class groups, or others, can be instantiated as a “secure group” on top of your favorite MPC framework’s arithmetic layer. In our research setting, we used <a href="https://github.com/lschoe/mpyc">MPyC</a>. This open-source MPC framework by Berry Schoenmakers is very convenient to use, performant and easy to extend.</p>
+
+<h2 id="class-groups-via-binary-quadratic-forms">Class groups via binary quadratic forms</h2>
+<p>We now dive a bit deeper into our MPC implementation of class groups.</p>
+
+<p>Class groups of imaginary quadratic fields can be represented using <strong>binary quadratic forms</strong>:</p>
+
+<p><em>f</em>(<em>x, y</em>) = <em>ax</em>² + <em>bxy + cy</em>²</p>
+
+<p>with discriminant Δ = <em>b</em>² - 4<em>ac</em> &lt; 0.</p>
+
+<p>The group operation (composition) and reduction can be expressed using integer arithmetic. We adapt these classical algorithms to the MPC setting:</p>
+
+<ul>
+  <li><strong>Composition</strong> combines two forms using secure xgcd and modular arithmetic.</li>
+  <li><strong>Reduction</strong> uses a binary algorithm that avoids explicit divisions, making it MPC-friendly.</li>
+  <li><strong>Encoding</strong> maps integers to valid class group elements without expensive primality tests.</li>
+</ul>
+
+<p>The composition operation required a performant extended gcd, which we touched upon above. For the reduction operation we optimized a result by <a href="https://link.springer.com/chapter/10.1007/11682462_8">Agarwal and Frandsen</a> to the MPC setting.
+The result is a secure implementation of class group arithmetic inside MPC.</p>
+
+<h2 id="applications-zero-knowledge-proofs-in-mpc">Applications: zero-knowledge proofs in MPC</h2>
+
+<p>With class groups implemented as secure groups, MPC can now support <strong>zero-knowledge proofs over secret-shared data</strong>. This opens several powerful applications:</p>
+
+<ul>
+  <li><strong>Threshold ZKPs:</strong> multiple parties jointly prove knowledge of a secret without revealing it.</li>
+  <li><strong>Threshold cryptography:</strong> secure group operations for distributed signatures and commitments.</li>
+</ul>
+
+<p>Our work helps to bridge the worlds of MPC and ZKP: MPC handles private computation, while class groups provide the algebraic structure needed for trustless and verifiable computation.</p>
+
+<h2 id="implementation-and-outlook">Implementation and outlook</h2>
+
+<p>All protocols have been implemented in <a href="https://github.com/lschoe/mpyc">MPyC</a>, a Python-based MPC framework. Developers can now perform:</p>
+
+<ul>
+  <li>Secure integer xgcd’s</li>
+  <li>Secure group operations</li>
+  <li>Class group arithmetic with unknown-order properties</li>
+</ul>
+
+<p>The MPyC repo also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a> and a threshold zero-knowledge proof based on this work.</p>
+
+<p>By bridging secure computation, abstract algebra and cryptography, we hope to show that, with the right abstractions, we can create new practical tools for privacy-preserving computation, like <strong>publicly verifiable MPC without trusted setups</strong>.</p>
+
+
+  </div><a class="u-url" href="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Roseman Labs Tech Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Roseman Labs Tech Blog</li><li><a class="u-email" href="mailto:info@rosemanlabs.com">info@rosemanlabs.com</a></li><li class="p-name">© Roseman Labs 2020–2025</li>
+        </ul><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="contact-list">
+        <li class="p-name"><a href="https://rosemanlabs.com/en/privacy-policy?hsLang=en" rel="noopener">Privacy policy</a></li>
+        <li class="p-name"><a href="https://rosemanlabs.com/responsible-disclosure-policy?hsLang=en" rel="noopener"><span>Responsible disclosure policy</span></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>The technology blog of Roseman Labs, where we post various technical matter, trip reports, etcetera.</p>
+
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8f5bac5d22b94c86ac873828cd39de4d"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+
+</html>
