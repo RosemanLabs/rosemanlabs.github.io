@@ -1,4 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-08-28T11:55:56+02:00</updated><id>/feed.xml</id><title type="html">Roseman Labs Tech Blog</title><subtitle>The technology blog of Roseman Labs, where we post various technical matter, trip reports, etcetera.</subtitle><entry><title type="html">A safe pointer in C++ that protects against use after free and updates when the pointee is moved</title><link href="/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved.html" rel="alternate" type="text/html" title="A safe pointer in C++ that protects against use after free and updates when the pointee is moved" /><published>2025-08-28T09:43:00+02:00</published><updated>2025-08-28T09:43:00+02:00</updated><id>/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved</id><content type="html" xml:base="/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved.html"><![CDATA[<p>Sometimes some object <em>A</em> needs to interact with another object <em>B</em>, e.g., <em>A</em> calls one of <em>B</em>’s methods.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-11-14T15:46:16+01:00</updated><id>/feed.xml</id><title type="html">Roseman Labs Tech Blog</title><subtitle>The technology blog of Roseman Labs, where we post various technical matter, trip reports, etcetera.</subtitle><entry><title type="html">Supporting abstract algebra in MPC for threshold cryptography</title><link href="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html" rel="alternate" type="text/html" title="Supporting abstract algebra in MPC for threshold cryptography" /><published>2025-11-13T19:50:00+01:00</published><updated>2025-11-13T19:50:00+01:00</updated><id>/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc</id><content type="html" xml:base="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Secure_multi-party_computation">Secure multi-party computation (MPC)</a> allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much.</p>
+
+<p>Abstract algebra and number theory are sub-fields of mathematics that provide many of the building blocks of cryptography. The <a href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm">extended greatest common divisor</a>, for example, can be used for modular inversion, an important step in RSA key generation. Our interest is in zero-knowledge proofs that allow an outsider to an MPC computation to verify that this computation was not tampered with.</p>
+
+<p>In our recent paper, <a href="https://link.springer.com/chapter/10.1007/978-3-031-34671-2_3"><em>“Efficient Extended GCD and Class Groups from Secure Integer Arithmetic”</em></a>, my PhD supervisor <a href="https://berry.win.tue.nl/">Berry Schoenmakers</a> and I present a technique to implement certain number-theoretic operations within MPC. With this paper we extend the toolbox for MPC and enable cryptographic operations such as <a href="https://en.wikipedia.org/wiki/Zero-knowledge_proof">zero-knowledge proofs (ZKPs)</a> in the MPC setting.</p>
+
+<h2 id="zero-knowledge-proofs-and-the-role-of-class-groups">Zero-knowledge proofs and the role of class groups</h2>
+
+<p>Zero-knowledge proofs allow one party (the prover) to convince another (the verifier) that a statement is true, without revealing any information beyond the validity of the statement. Many ZKP systems rely on finite <a href="https://en.wikipedia.org/wiki/Group_(mathematics)">groups</a> with specific properties, often elliptic curves or modular arithmetic groups.</p>
+
+<p>One reason for finite groups being ubiquitous in cryptography is because of the discrete logarithm problem; for certain groups, this problem is believed to be hard, yielding a candidate one-way function.</p>
+
+<p>Recall that the number of elements in a group is called the group <em>order</em>.
+Now, so-called <a href="https://en.wikipedia.org/wiki/Ideal_class_group"><em>class groups</em></a> have a special property that sets them apart: <strong>their group order is unknown</strong>. If the size is chosen sufficiently large, no one can determine the exact order of the group, not even someone who creates an instance of this group.</p>
+
+<p>This “unknown order” feature is extremely valuable because it allows building zero-knowledge proof systems that do not require a <em>trusted setup</em>, i.e., a system that requires its setup to be performed by an honest party. The unknown-order feature can also speed up zero-knowledge proof systems.</p>
+
+<p>Being able to construct a zero-knowledge proof <em>in MPC</em> enables public verifiability of an MPC computation — letting an outsider to the computation verify the correctness of the computation. In other words, protection against tampering with the computation, even if all compute parties are corrupted. Additionally, bringing class groups into the MPC world means we can now construct ZKPs with the advantages of unknown-order groups we mentioned above.</p>
+
+<h2 id="the-core-challenge-secure-arithmetic-for-xgcd-and-group-operations">The core challenge: secure arithmetic for XGCD and group operations</h2>
+
+<p>One of the foundations of our work is the <strong>extended greatest common divisor (xgcd)</strong> algorithm. The integer gcd algorithm computes, not surprisingly, the greatest common divisor of two integers. For example gcd(22, 33) = 11.</p>
+
+<p>The xgcd computes two additional factors, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional factors are called the Bézout coefficients.</p>
+
+<p>In a normal setting, the xgcd algorithm involves branching decisions based on comparisons. However branching on secret data is insecure, as it could leak information about the inputs via various side-channels. One of the core challenges of building an MPC-version is to redesign the xgcd algorithm so that all branching becomes <em>secret independent</em>, aka <em>constant time</em>.</p>
+
+<h3 id="a-constant-time-integer-based-xgcd">A constant-time, integer-based XGCD</h3>
+
+<p>In our result, we adapt the <a href="https://eprint.iacr.org/2019/266">Bernstein–Yang “divsteps” algorithm</a>, which already runs in constant time, and rework it to operate purely on integers (instead of 2-adic representations). This is more suitable for our MPC setting. The protocol runs a fixed number of iterations, each performing only arithmetic and bitwise operations that can be done securely in MPC. The overall cost is <em>O</em>(<em>N</em> log <em>N</em>) secure multiplications, which is significantly more efficient than using traditional binary GCD methods (whose asymptotic complexity is <em>O</em>(<em>N</em>²)).</p>
+
+<p>For the mathematicians, we also prove tight bounds on the size of the intermediate results (the Bézout coefficients):</p>
+
+<p>|<em>u</em>|, |<em>v</em>| ≤ 3  max(<em>a</em>, <em>b</em>)</p>
+
+<p>Explicit bounds on these intermediate results are essential to control the numeric range of secret shares and avoid overflows.</p>
+
+<h2 id="secure-groups-in-mpc">Secure groups in MPC</h2>
+
+<p>To go beyond integers, we <a href="https://mpyc.readthedocs.io/en/latest/mpyc.html#module-mpyc.secgroups">implement</a> the concept of a <strong>secure group</strong>. This describes how to represent and manipulate elements of a finite group under MPC.</p>
+
+<p>A secure group implementation must support:</p>
+
+<ul>
+  <li>Group operations (multiplication, inversion)</li>
+  <li>Equality tests and conditional branching</li>
+  <li>Exponentiation</li>
+  <li>Random sampling</li>
+  <li>Encoding and decoding between representations</li>
+</ul>
+
+<p>By defining these primitives generically, any group, for example based on elliptic curves, class groups, or others, can be instantiated as a “secure group” on top of your favorite MPC framework’s arithmetic layer. In our research setting, we used <a href="https://github.com/lschoe/mpyc">MPyC</a>. This open-source MPC framework by Berry Schoenmakers is very convenient to use, performant and easy to extend.</p>
+
+<h2 id="class-groups-via-binary-quadratic-forms">Class groups via binary quadratic forms</h2>
+<p>We now dive a bit deeper into our MPC implementation of class groups.</p>
+
+<p>Class groups of imaginary quadratic fields can be represented using <strong>binary quadratic forms</strong>:</p>
+
+<p><em>f</em>(<em>x, y</em>) = <em>ax</em>² + <em>bxy + cy</em>²</p>
+
+<p>with discriminant Δ = <em>b</em>² - 4<em>ac</em> &lt; 0.</p>
+
+<p>The group operation (composition) and reduction can be expressed using integer arithmetic. We adapt these classical algorithms to the MPC setting:</p>
+
+<ul>
+  <li><strong>Composition</strong> combines two forms using secure xgcd and modular arithmetic.</li>
+  <li><strong>Reduction</strong> uses a binary algorithm that avoids explicit divisions, making it MPC-friendly.</li>
+  <li><strong>Encoding</strong> maps integers to valid class group elements without expensive primality tests.</li>
+</ul>
+
+<p>The composition operation required a performant extended gcd, which we touched upon above. For the reduction operation we optimized a result by <a href="https://link.springer.com/chapter/10.1007/11682462_8">Agarwal and Frandsen</a> to the MPC setting.
+The result is a secure implementation of class group arithmetic inside MPC.</p>
+
+<h2 id="applications-zero-knowledge-proofs-in-mpc">Applications: zero-knowledge proofs in MPC</h2>
+
+<p>With class groups implemented as secure groups, MPC can now support <strong>zero-knowledge proofs over secret-shared data</strong>. This opens several powerful applications:</p>
+
+<ul>
+  <li><strong>Threshold ZKPs:</strong> multiple parties jointly prove knowledge of a secret without revealing it.</li>
+  <li><strong>Threshold cryptography:</strong> secure group operations for distributed signatures and commitments.</li>
+</ul>
+
+<p>Our work helps to bridge the worlds of MPC and ZKP: MPC handles private computation, while class groups provide the algebraic structure needed for trustless and verifiable computation.</p>
+
+<h2 id="implementation-and-outlook">Implementation and outlook</h2>
+
+<p>All protocols have been implemented in <a href="https://github.com/lschoe/mpyc">MPyC</a>, a Python-based MPC framework. Developers can now perform:</p>
+
+<ul>
+  <li>Secure integer xgcd’s</li>
+  <li>Secure group operations</li>
+  <li>Class group arithmetic with unknown-order properties</li>
+</ul>
+
+<p>The MPyC repo also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a> and a threshold zero-knowledge proof based on this work.</p>
+
+<p>By bridging secure computation, abstract algebra and cryptography, we hope to show that, with the right abstractions, we can create new practical tools for privacy-preserving computation, like <strong>publicly verifiable MPC without trusted setups</strong>.</p>]]></content><author><name>Toon Segers</name></author><category term="mathematics" /><category term="mpc" /><summary type="html"><![CDATA[Secure multi-party computation (MPC) allows parties to jointly compute on private data without revealing their inputs. While MPC handles basic numeric operations efficiently, the use of algorithms from abstract algebra and number theory in an MPC context has not been studied much.]]></summary></entry><entry><title type="html">A safe pointer in C++ that protects against use after free and updates when the pointee is moved</title><link href="/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved.html" rel="alternate" type="text/html" title="A safe pointer in C++ that protects against use after free and updates when the pointee is moved" /><published>2025-08-28T09:43:00+02:00</published><updated>2025-08-28T09:43:00+02:00</updated><id>/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved</id><content type="html" xml:base="/c++/safety/object-lifetime/2025/08/28/a-safe-pointer-that-protects-against-use-after-free-and-updates-when-the-pointee-is-moved.html"><![CDATA[<p>Sometimes some object <em>A</em> needs to interact with another object <em>B</em>, e.g., <em>A</em> calls one of <em>B</em>’s methods.</p>
 
 <p>In a memory-unsafe language like C++, it is left to the programmer to assure that <em>B</em> outlives <em>A</em>; if <em>B</em> happens to be already destructed, this would be a use-after-free bug. Managing object lifetimes can be tricky, especially with asynchronous code.</p>
 
