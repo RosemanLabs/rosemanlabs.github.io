@@ -75,7 +75,7 @@ Now, so-called <a href="https://en.wikipedia.org/wiki/Ideal_class_group"><em>cla
 
 <p>One of the foundations of our work is the <strong>extended greatest common divisor (xgcd)</strong> algorithm. The integer gcd algorithm computes, not surprisingly, the greatest common divisor of two integers. For example gcd(22, 33) = 11.</p>
 
-<p>The xgcd computes two additional numbers, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional factors are called the Bézout coefficients.</p>
+<p>The xgcd computes two additional numbers, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional numbers are called the Bézout coefficients.</p>
 
 <p>In a normal setting, the xgcd algorithm involves branching decisions based on comparisons. However branching on secret data is insecure, as it could leak information about the inputs. One of the core challenges of building an MPC-version is to redesign the xgcd algorithm so that all branching becomes data independent (where these data may involve secret keys, secret messages, or other sensitive material), also known as <em>constant time</em>.</p>
 
@@ -146,7 +146,7 @@ The result is a secure implementation of class group arithmetic inside MPC.</p>
   <li>Class group arithmetic with unknown-order properties</li>
 </ul>
 
-<p>The MPyC repository also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a>, a <a href="https://github.com/lschoe/mpyc/blob/master/demos/elgamal.py">threshold homomorphic cryptosystem</a> and a <a href="https://github.com/toonsegers/verifiable_mpc">threshold zero-knowledge proof</a> based on this work.</p>
+<p>The MPyC repository also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a> and a <a href="https://github.com/lschoe/mpyc/blob/master/demos/elgamal.py">threshold homomorphic cryptosystem</a>, and there is also a <a href="https://github.com/toonsegers/verifiable_mpc">threshold zero-knowledge proof</a> based on this work.</p>
 
 <p>By bridging secure computation, abstract algebra and cryptography, we hope to show that, with the right abstractions, we can create new practical tools for privacy-preserving computation, like <strong>publicly verifiable MPC without a trusted setup</strong>.</p>
 
