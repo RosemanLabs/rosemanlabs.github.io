@@ -60,7 +60,7 @@
 
 <h2 id="zero-knowledge-proofs-and-the-role-of-class-groups">Zero-knowledge proofs and the role of class groups</h2>
 
-<p>Zero-knowledge proofs allow one party (the prover) to convince another (the verifier) that a statement is true, without revealing any information beyond the validity of the statement. Many ZKP systems rely on finite <a href="https://en.wikipedia.org/wiki/Group_(mathematics)">groups</a> with specific properties, often elliptic curves or modular arithmetic groups.</p>
+<p>Zero-knowledge proofs allow one party (the prover) to convince another (the verifier) that a statement is true, without revealing any information beyond the validity of the statement. Many ZKP systems rely on finite <a href="https://en.wikipedia.org/wiki/Group_(mathematics)">groups</a> with specific properties, often elliptic curves or modular multiplication groups.</p>
 
 <p>One reason for finite groups being ubiquitous in cryptography is because of the discrete logarithm problem; for certain groups, this problem is believed to be hard, yielding a candidate one-way function.</p>
 
@@ -75,15 +75,15 @@ Now, so-called <a href="https://en.wikipedia.org/wiki/Ideal_class_group"><em>cla
 
 <p>One of the foundations of our work is the <strong>extended greatest common divisor (xgcd)</strong> algorithm. The integer gcd algorithm computes, not surprisingly, the greatest common divisor of two integers. For example gcd(22, 33) = 11.</p>
 
-<p>The xgcd computes two additional factors, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional factors are called the Bézout coefficients.</p>
+<p>The xgcd computes two additional numbers, namely <em>u</em> and <em>v</em> such that <em>ua + vb = g</em> = gcd(<em>a</em>, <em>b</em>). These additional factors are called the Bézout coefficients.</p>
 
-<p>In a normal setting, the xgcd algorithm involves branching decisions based on comparisons. However branching on secret data is insecure, as it could leak information about the inputs via various side-channels. One of the core challenges of building an MPC-version is to redesign the xgcd algorithm so that all branching becomes <em>secret independent</em>, aka <em>constant time</em>.</p>
+<p>In a normal setting, the xgcd algorithm involves branching decisions based on comparisons. However branching on secret data is insecure, as it could leak information about the inputs. One of the core challenges of building an MPC-version is to redesign the xgcd algorithm so that all branching becomes data independent (where these data may involve secret keys, secret messages, or other sensitive material), also known as <em>constant time</em>.</p>
 
 <h3 id="a-constant-time-integer-based-xgcd">A constant-time, integer-based XGCD</h3>
 
-<p>In our result, we adapt the <a href="https://eprint.iacr.org/2019/266">Bernstein–Yang “divsteps” algorithm</a>, which already runs in constant time, and rework it to operate purely on integers (instead of 2-adic representations). This is more suitable for our MPC setting. The protocol runs a fixed number of iterations, each performing only arithmetic and bitwise operations that can be done securely in MPC. The overall cost is <em>O</em>(<em>N</em> log <em>N</em>) secure multiplications, which is significantly more efficient than using traditional binary GCD methods (whose asymptotic complexity is <em>O</em>(<em>N</em>²)).</p>
+<p>In our result, we adapt the <a href="https://eprint.iacr.org/2019/266">Bernstein–Yang “divsteps” algorithm</a>, which already runs in constant time, and rework it to operate purely on integers (instead of 2-adic representations). This is more suitable for our MPC setting. The protocol runs a fixed number of iterations, each performing only arithmetic and bit-wise operations that can be done securely in MPC. The overall cost is <em>O</em>(<em>N</em> log <em>N</em>) secure multiplications, which is significantly more efficient than using traditional binary GCD methods (whose asymptotic complexity is <em>O</em>(<em>N</em>²) secure multiplications).</p>
 
-<p>For the mathematicians, we also prove tight bounds on the size of the intermediate results (the Bézout coefficients):</p>
+<p>On a technical note, we also made a substantial effort to prove tight bounds on the size of the intermediate results (the Bézout coefficients):</p>
 
 <p>|<em>u</em>|, |<em>v</em>| ≤ 3  max(<em>a</em>, <em>b</em>)</p>
 
@@ -97,7 +97,7 @@ Now, so-called <a href="https://en.wikipedia.org/wiki/Ideal_class_group"><em>cla
 
 <ul>
   <li>Group operations (multiplication, inversion)</li>
-  <li>Equality tests and conditional branching</li>
+  <li>Equality tests and oblivious branching</li>
   <li>Exponentiation</li>
   <li>Random sampling</li>
   <li>Encoding and decoding between representations</li>
@@ -146,10 +146,11 @@ The result is a secure implementation of class group arithmetic inside MPC.</p>
   <li>Class group arithmetic with unknown-order properties</li>
 </ul>
 
-<p>The MPyC repo also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a> and a threshold zero-knowledge proof based on this work.</p>
+<p>The MPyC repository also includes demonstrations of a <a href="https://github.com/lschoe/mpyc/blob/master/demos/dsa.py">threshold signature scheme</a>, a <a href="https://github.com/lschoe/mpyc/blob/master/demos/elgamal.py">threshold homomorphic cryptosystem</a> and a <a href="https://github.com/toonsegers/verifiable_mpc">threshold zero-knowledge proof</a> based on this work.</p>
 
-<p>By bridging secure computation, abstract algebra and cryptography, we hope to show that, with the right abstractions, we can create new practical tools for privacy-preserving computation, like <strong>publicly verifiable MPC without trusted setups</strong>.</p>
+<p>By bridging secure computation, abstract algebra and cryptography, we hope to show that, with the right abstractions, we can create new practical tools for privacy-preserving computation, like <strong>publicly verifiable MPC without a trusted setup</strong>.</p>
 
+<p><em>Many thanks to Berry Schoenmakers for his feedback on an earlier version of this post.</em></p>
 
   </div><a class="u-url" href="/mathematics/mpc/2025/11/13/abstract-algebra-in-mpc.html" hidden></a>
 </article>
